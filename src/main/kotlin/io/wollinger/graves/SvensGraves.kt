@@ -1,5 +1,6 @@
 package io.wollinger.graves
 
+import io.wollinger.graves.config.ConfigManager
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.event.player.UseEntityCallback
@@ -10,6 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import org.slf4j.LoggerFactory
+import java.io.File
 
 object SvensGraves : ModInitializer {
     private val logger = LoggerFactory.getLogger("svens-graves")
@@ -18,6 +20,7 @@ object SvensGraves : ModInitializer {
         // This code runs as soon as Minecraft is in a mod-load-ready state.
         // However, some things (like resources) may still be uninitialized.
         // Proceed with mild caution.
+        ConfigManager
 
 		UseEntityCallback.EVENT.register { player, world, hand, entity, hitResult ->
 			if(entity is InteractionEntity && GraveUtils.isGrave(entity)) {

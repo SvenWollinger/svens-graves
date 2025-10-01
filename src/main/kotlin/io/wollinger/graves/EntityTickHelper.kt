@@ -12,10 +12,10 @@ object EntityTickHelper {
         var health = EntityAccessorHelper.readInt(entity, CustomDataKeys.GRAVE_HEALTH) ?: return
         health -= 1
         if(health < 0) {
-            GraveUtils.openGrave(entity)
+            GraveUtils.openGrave(grave = entity)
         } else {
-            entity.customName = Text.literal(health.toString())
+            entity.customName = Text.literal("${(health / 20) + 1}s")
         }
-        EntityAccessorHelper.writeInt(entity, CustomDataKeys.GRAVE_HEALTH, health)
+        EntityAccessorHelper.writeInt(entity = entity, key = CustomDataKeys.GRAVE_HEALTH, data = health)
     }
 }

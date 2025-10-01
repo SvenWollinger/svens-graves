@@ -7,9 +7,9 @@
 	"authors": [ "Sven Wollinger" ],
 	"contact": {
 		"homepage": "https://wollinger.io",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/SvenWollinger/svens-graves"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/svens-graves/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -30,7 +30,5 @@
 		"fabric-api": "*",
 		"fabric-language-kotlin": "*"
 	},
-	"suggests": {
-		"another-mod": "*"
-	}
+	"suggests": { }
 }

@@ -1,5 +1,6 @@
 package io.wollinger.graves
 
+import io.wollinger.graves.config.ConfigManager
 import net.minecraft.block.Blocks
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
@@ -28,7 +29,7 @@ object GraveUtils {
         chestEntity.blockState = Blocks.CHEST.defaultState
 
         //Display Name
-        chestEntity.customName = Text.literal("${player.name.literalString}'s Grave")
+        chestEntity.customName = Text.literal(ConfigManager.getConfigSetting(player).grave_label.replace("%PLAYER_NAME%", player.name.literalString ?: "No Name"))
         chestEntity.isCustomNameVisible = true
 
         //Visual Position & Scaling
@@ -46,7 +47,7 @@ object GraveUtils {
         interactionEntity.interactionHeight = 0.7f
         EntityAccessorHelper.writeString(interactionEntity, CustomDataKeys.GRAVE_OWNER_UUID, player.uuidAsString)
         EntityAccessorHelper.writeString(interactionEntity, CustomDataKeys.GRAVE_CONNECTION_BLOCK_DISPLAY_UUID, chestEntity.uuidAsString)
-        EntityAccessorHelper.writeInt(interactionEntity, CustomDataKeys.GRAVE_HEALTH, 300)
+        EntityAccessorHelper.writeInt(interactionEntity, CustomDataKeys.GRAVE_HEALTH, ConfigManager.getConfigSetting(player).grave_lifetime)
         EntityAccessorHelper.writeNbtList(interactionEntity, CustomDataKeys.GRAVE_CONTENTS, content)
         world.spawnEntity(interactionEntity)
     }
