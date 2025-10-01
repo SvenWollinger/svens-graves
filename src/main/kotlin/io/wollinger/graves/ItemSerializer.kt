@@ -8,7 +8,6 @@ import net.minecraft.nbt.NbtElement
 import net.minecraft.nbt.NbtOps
 
 object ItemSerializer {
-    val SERIALIZE_OPS: DynamicOps<NbtCompound> = NbtOps.INSTANCE as DynamicOps<NbtCompound>
     fun serialize(itemStack: ItemStack): NbtCompound {
         val ops: DynamicOps<NbtCompound> = NbtOps.INSTANCE as DynamicOps<NbtCompound>
         val result: DataResult<NbtCompound> = ItemStack.CODEC.encodeStart(ops, itemStack)

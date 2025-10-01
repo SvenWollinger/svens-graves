@@ -4,8 +4,7 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"EntityAccessor",
-		"EntityTickMixin",
-		"ExampleMixin"
+		"EntityTickMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
