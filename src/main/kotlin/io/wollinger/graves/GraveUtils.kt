@@ -1,35 +1,22 @@
 package io.wollinger.graves
 
-import io.wollinger.graves.mixin.EntityAccessor
 import net.minecraft.block.Blocks
-import net.minecraft.block.entity.ChestBlockEntity
-import net.minecraft.component.ComponentType
-import net.minecraft.component.type.NbtComponent
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.ItemEntity
-import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.decoration.DisplayEntity
 import net.minecraft.entity.decoration.InteractionEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList
-import net.minecraft.storage.NbtReadView
-import net.minecraft.storage.ReadView
-import net.minecraft.storage.WriteView
 import net.minecraft.text.Text
-import net.minecraft.util.ActionResult
 import net.minecraft.util.math.AffineTransformation
-import net.minecraft.util.math.AffineTransformations
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
-import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import org.joml.Vector3d
 import org.joml.Vector3f
 import java.util.UUID
 
-object GraveSpawner {
+object GraveUtils {
     fun spawnGrave(player: PlayerEntity, location: BlockPos, world: World, content: NbtList) {
         val chestEntity = DisplayEntity.BlockDisplayEntity(EntityType.BLOCK_DISPLAY, world)
         val interactionEntity = InteractionEntity(EntityType.INTERACTION, world)
@@ -39,9 +26,6 @@ object GraveSpawner {
 
         //Block State
         chestEntity.blockState = Blocks.CHEST.defaultState
-
-        //Bounding Box (Doesn't work?)
-        chestEntity.boundingBox = Box.of(location.toCenterPos(), 2.0, 2.0, 2.0)
 
         //Display Name
         chestEntity.customName = Text.literal("${player.name.literalString}'s Grave")
@@ -67,27 +51,39 @@ object GraveSpawner {
         world.spawnEntity(interactionEntity)
     }
 
-    fun killGrave(player: PlayerEntity?, entity: Entity) {
-        val ownerUUID = EntityAccessorHelper.readString(entity, CustomDataKeys.GRAVE_OWNER_UUID)!!.toUUID()
-        if(player != null && ownerUUID != player.uuid) {
-            player?.sendMessage(Text.literal("This is not your grave!"), false)
+    fun getOwnerUUID(grave: Entity): UUID? {
+        return EntityAccessorHelper.readString(grave, CustomDataKeys.GRAVE_OWNER_UUID)?.toUUID()
+    }
+
+    fun isGrave(entity: Entity): Boolean {
+        return getOwnerUUID(entity) != null
+    }
+
+    fun isOwner(player: PlayerEntity, grave: Entity): Boolean {
+        return getOwnerUUID(grave) == player.uuid
+    }
+
+    fun interactGrave(player: PlayerEntity, grave: Entity) {
+        if(!isGrave(grave)) return
+        if(!isOwner(player, grave)) {
+            player.sendMessage(Text.literal("This is not your grave!"), false)
             return
         }
-        val world = entity.world!!
-        val owner = world.server!!.playerManager.getPlayer(ownerUUID)
+        openGrave(grave)
+    }
 
-        val blockDisplayUUID = EntityAccessorHelper.readString(entity, CustomDataKeys.GRAVE_CONNECTION_BLOCK_DISPLAY_UUID)
+    fun openGrave(grave: Entity) {
+        val world = grave.world!!
+        val blockDisplayUUID = EntityAccessorHelper.readString(grave, CustomDataKeys.GRAVE_CONNECTION_BLOCK_DISPLAY_UUID)
         val blockDisplay = world.getEntity(UUID.fromString(blockDisplayUUID))
 
-        EntityAccessorHelper.readNbtList(entity, CustomDataKeys.GRAVE_CONTENTS)?.forEach { nbtElement ->
+        EntityAccessorHelper.readNbtList(grave, CustomDataKeys.GRAVE_CONTENTS)?.forEach { nbtElement ->
             val item = ItemSerializer.deserialize(nbtElement)
-            val itemEntity = ItemEntity(world, entity.pos.x, entity.pos.y, entity.pos.z, item)
+            val itemEntity = ItemEntity(world, grave.pos.x, grave.pos.y, grave.pos.z, item)
             world.spawnEntity(itemEntity)
         }
 
         blockDisplay?.remove(Entity.RemovalReason.DISCARDED)
-        entity.remove(Entity.RemovalReason.DISCARDED)
-
-        player?.sendMessage(Text.literal("This grave is from ${owner!!.name.literalString}"), false)
+        grave.remove(Entity.RemovalReason.DISCARDED)
     }
 }
