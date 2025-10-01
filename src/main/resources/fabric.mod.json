@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "svens-graves",
+	"version": "${version}",
+	"name": "Sven's Graves",
+	"description": "Fabric Server side mod for simple Graves",
+	"authors": [ "Sven Wollinger" ],
+	"contact": {
+		"homepage": "https://wollinger.io",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/svens-graves/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "io.wollinger.graves.SvensGraves",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+		"svens-graves.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.17.2",
+		"minecraft": "~1.21.8",
+		"java": ">=21",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

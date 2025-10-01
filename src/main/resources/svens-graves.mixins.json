@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "io.wollinger.graves.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"EntityAccessor",
+		"EntityTickMixin",
+		"ExampleMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

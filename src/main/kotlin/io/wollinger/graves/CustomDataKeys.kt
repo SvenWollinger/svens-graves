@@ -1,0 +1,10 @@
+package io.wollinger.graves
+
+object CustomDataKeys {
+    //TODO: Review names
+    val GRAVE_OWNER_UUID = "GRAVE_OWNER_UUID"
+    val GRAVE_CONTENTS = "GRAVE_CONTENTS"
+    val GRAVE_HEALTH = "GRAVE_HEALTH"
+    val GRAVE_CONNECTION_INTERACTION_UUID = "INTERACT_UUID"
+    val GRAVE_CONNECTION_BLOCK_DISPLAY_UUID = "BLOCK_DISPLAY_UUID"
+}
