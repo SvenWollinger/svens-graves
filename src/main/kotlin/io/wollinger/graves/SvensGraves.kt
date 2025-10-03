@@ -7,37 +7,33 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback
 import net.fabricmc.fabric.api.event.player.UseItemCallback
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.entity.decoration.InteractionEntity
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtList
-import net.minecraft.screen.GenericContainerScreenHandler
-import net.minecraft.screen.HopperScreenHandler
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import org.slf4j.LoggerFactory
-import java.io.File
 
 object SvensGraves : ModInitializer {
     private val logger = LoggerFactory.getLogger("svens-graves")
 
 	override fun onInitialize() {
-        // This code runs as soon as Minecraft is in a mod-load-ready state.
-        // However, some things (like resources) may still be uninitialized.
-        // Proceed with mild caution.
-        ConfigManager
+        ConfigManager //Init ConfigManager
 
-        UseItemCallback.EVENT.register { player, v2, v3 ->
-            val nbtString = ItemSerializer.serialize(player.inventory.selectedStack).toString()
-            player.sendMessage(Text.literal(nbtString), false)
-            ActionResult.PASS
+        if(FabricLoader.getInstance().isDevelopmentEnvironment) {
+            //For debugging: On right click, print item nbt data to player
+            UseItemCallback.EVENT.register { player, v2, v3 ->
+                val nbtString = ItemSerializer.serialize(player.inventory.selectedStack).toString()
+                player.sendMessage(Text.literal(nbtString), false)
+                logger.info("Item Serializer Debug: $nbtString")
+                ActionResult.PASS
+            }
         }
 
 		UseEntityCallback.EVENT.register { player, world, hand, entity, hitResult ->
 			if(entity is InteractionEntity && GraveUtils.isGrave(entity)) {
 				GraveUtils.interactGrave(player, entity)
-                ActionResult.SUCCESS
+                return@register ActionResult.SUCCESS
 			}
 			ActionResult.PASS
 		}
@@ -51,6 +47,10 @@ object SvensGraves : ModInitializer {
                 graveItems.add(nbtData)
             }
             entity.inventory.clear()
+
+            //Don't spawn a grave if we have no items to store
+            if(graveItems.isEmpty()) return@register true
+
             val spawnResult = GraveUtils.spawnGrave(entity, entity.blockPos, entity.world, graveItems)
 
             val deathMessage = ConfigManager.langConfig.death_message
