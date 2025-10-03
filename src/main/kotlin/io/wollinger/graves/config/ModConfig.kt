@@ -4,15 +4,19 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ModConfig(
-    var global_setting: GraveSetting = GraveSetting(),
-    var player_settings: HashMap<String, GraveSetting> = hashMapOf(
-        Pair("6694e431-4128-4bce-95f0-f7b359e8de14", GraveSetting("A rodents Grave (%PLAYER_NAME%).", 20 * 60 * 60, true))
+    val global_setting: GraveSetting = GraveSetting(),
+    val player_settings: HashMap<String, GraveSetting> = hashMapOf(
+        "6694e431-4128-4bce-95f0-f7b359e8de14" to GraveSetting(
+            grave_label = "A rodents Grave (%PLAYER_NAME%).",
+            grave_lifetime = 20 * 60 * 60,
+            locked_to_owner = true
+        )
     )
 )
 
 @Serializable
 data class GraveSetting(
-    var grave_label: String = "%PLAYER_NAME%'s Grave",
-    var grave_lifetime: Int = 20 * 60 * 20,
-    var locked_to_owner: Boolean = true
+    val grave_label: String = "%PLAYER_NAME%'s Grave",
+    val grave_lifetime: Int = 20 * 60 * 20,
+    val locked_to_owner: Boolean = true
 )

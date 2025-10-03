@@ -10,18 +10,17 @@ object ConfigManager {
         prettyPrint = true
     }
     private val configFolder = File("config").apply { mkdirs() }
-    private val modConfigFile = File(configFolder, "svens-graves.json")
+    private val modConfigFolder = File(configFolder, "svens-graves").apply { mkdirs() }
+    private val modConfigFile = File(modConfigFolder, "svens-graves.json")
+    private val langConfigFile = File(modConfigFolder, "svens-graves-lang.json")
 
-    var config: ModConfig
+    var config: ModConfig = if(modConfigFile.exists()) json.decodeFromString(modConfigFile.readText()) else ModConfig()
+    var langConfig: LangConfig = if(langConfigFile.exists()) json.decodeFromString(langConfigFile.readText()) else LangConfig()
 
     init {
-        if(modConfigFile.exists()) {
-            config = json.decodeFromString(modConfigFile.readText())
-        } else {
-            config = ModConfig()
-            val encoded = json.encodeToString(config)
-            modConfigFile.writeText(encoded)
-        }
+        //Write defaults or new missing values
+        modConfigFile.writeText(json.encodeToString(config))
+        langConfigFile.writeText(json.encodeToString(langConfig))
     }
 
     fun getConfigSetting(player: PlayerEntity): GraveSetting {

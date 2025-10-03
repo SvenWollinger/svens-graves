@@ -10,14 +10,14 @@ import kotlin.jvm.optionals.getOrNull
 object EntityAccessorHelper {
     private fun createKey(key: String) = "SVENS_GRAVES_$key"
 
-    fun getEditableNbt(entity: Entity, action: (NbtCompound) -> Unit) {
+    private fun getEditableNbt(entity: Entity, action: (NbtCompound) -> Unit) {
         val accessor = entity as EntityAccessor
         val nbt = accessor.customData.copyNbt()
         action.invoke(nbt)
         accessor.customData = NbtComponent.of(nbt)
     }
 
-    fun getNbt(entity: Entity) = (entity as EntityAccessor).customData.copyNbt()
+    private fun getNbt(entity: Entity): NbtCompound = (entity as EntityAccessor).customData.copyNbt()
 
     fun writeString(entity: Entity, key: String, data: String) {
         getEditableNbt(entity) { nbt ->

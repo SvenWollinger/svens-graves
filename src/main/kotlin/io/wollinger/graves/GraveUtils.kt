@@ -16,9 +16,15 @@ import net.minecraft.util.math.Box
 import net.minecraft.world.World
 import org.joml.Vector3f
 import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
+
+data class GraveSpawnResult(
+    val ownerEntity: PlayerEntity,
+    val graveTicks: Int
+)
 
 object GraveUtils {
-    fun spawnGrave(player: PlayerEntity, location: BlockPos, world: World, content: NbtList) {
+    fun spawnGrave(player: PlayerEntity, location: BlockPos, world: World, content: NbtList): GraveSpawnResult {
         val chestEntity = DisplayEntity.BlockDisplayEntity(EntityType.BLOCK_DISPLAY, world)
         val interactionEntity = InteractionEntity(EntityType.INTERACTION, world)
 
@@ -50,6 +56,8 @@ object GraveUtils {
         EntityAccessorHelper.writeInt(interactionEntity, CustomDataKeys.GRAVE_HEALTH, ConfigManager.getConfigSetting(player).grave_lifetime)
         EntityAccessorHelper.writeNbtList(interactionEntity, CustomDataKeys.GRAVE_CONTENTS, content)
         world.spawnEntity(interactionEntity)
+
+        return GraveSpawnResult(player, ConfigManager.getConfigSetting(player).grave_lifetime)
     }
 
     fun getOwnerUUID(grave: Entity): UUID? {
@@ -67,7 +75,13 @@ object GraveUtils {
     fun interactGrave(player: PlayerEntity, grave: Entity) {
         if(!isGrave(grave)) return
         if(!isOwner(player, grave)) {
-            player.sendMessage(Text.literal("This is not your grave!"), false)
+            val foundOwner = player.server!!.userCache!!.getByUuid(getOwnerUUID(grave)).getOrNull()
+            val message = if(foundOwner != null) {
+                ConfigManager.langConfig.not_owner_message.replace("%GRAVE_OWNER%", foundOwner.name)
+            } else {
+                ConfigManager.langConfig.not_owner_message_unknown
+            }
+            player.sendMessage(Text.literal(message), false)
             return
         }
         openGrave(grave)

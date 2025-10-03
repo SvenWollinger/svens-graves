@@ -5,7 +5,8 @@ import net.minecraft.entity.decoration.InteractionEntity
 import net.minecraft.text.Text
 
 object EntityTickHelper {
-    fun tick(entity: Entity) {
+    fun tickGrave(entity: Entity) {
+        //Entity is either not an InteractionEntity or not a Grave. Return early if not an InteractionEntity
         if(entity !is InteractionEntity || !GraveUtils.isGrave(entity)) {
             return
         }
@@ -14,8 +15,8 @@ object EntityTickHelper {
         if(health < 0) {
             GraveUtils.openGrave(grave = entity)
         } else {
-            entity.customName = Text.literal("${(health / 20) + 1}s")
+            EntityAccessorHelper.writeInt(entity = entity, key = CustomDataKeys.GRAVE_HEALTH, data = health)
+            entity.customName = Text.literal(Utils.formatTime((health / 20) + 1))
         }
-        EntityAccessorHelper.writeInt(entity = entity, key = CustomDataKeys.GRAVE_HEALTH, data = health)
     }
 }

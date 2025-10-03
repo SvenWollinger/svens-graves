@@ -14,9 +14,9 @@ public abstract class EntityTickMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;
-        // Your code here, runs every tick
         if (!entity.getWorld().isClient) {
-            EntityTickHelper.INSTANCE.tick(entity);
+            EntityTickHelper.INSTANCE.tickGrave(entity);
         }
     }
+
 }
